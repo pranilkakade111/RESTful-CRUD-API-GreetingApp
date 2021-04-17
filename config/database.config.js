@@ -1,3 +1,3 @@
 module.exports={
-    url: 'mongodb://localhost:27018/Greeting-App'
+    url: 'mongodb://localhost:27017/Greeting-App'
 }
