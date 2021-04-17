@@ -1,0 +1,23 @@
+{
+  "name": "greeting-app",
+  "version": "1.0.0",
+  "description": "Greeting is an act of communication in which human beings intentionally make their presence known to each other, to show attention to.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Express",
+    "RestAPI",
+    "MongoDB",
+    "Mongoose",
+    "Greeting"
+  ],
+  "author": "Pranil",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.4"
+  }
+}
