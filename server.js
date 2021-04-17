@@ -31,6 +31,8 @@ app.get('/',(req,res)=>{
     res.json({"message":"Greeting is an act of communication in which human beings intentionally make their presence known to each other, to show attention to."});
 });
 
+require('./app/routes/greet.routes.js')(app);
+
 // listen for requests
 app.listen(3000,()=>{
     console.log("Server is listening on port 3000");
