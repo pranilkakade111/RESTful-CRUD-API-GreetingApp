@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const logger = require('./logger');
+
 
 const app = express();
 
@@ -32,8 +34,11 @@ app.get('/',(req,res)=>{
 });
 
 require('./app/routes/greet.routes.js')(app);
+require("dotenv").config();
+let port=process.env.PORT;
+let host = process.env.HOST;
 
 // listen for requests
-app.listen(3000,()=>{
-    console.log("Server is listening on port 3000");
+app.listen(port, host, () => {
+    logger.log('info',`Server is listening ${host}:${port}`);
 });
