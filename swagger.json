@@ -1,0 +1,179 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "GreetingsApp",
+        "description": "This app is build for greeting to peopels"
+    },
+    "host": "localhost:5000",
+    "tags": [
+        {
+            "name": "Greets",
+            "description": "API for greets in the system"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/greets": {
+            "get": {
+                "tags": [
+                    "Greets"
+                ],
+                "summary": "Get all greets in system",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/greets"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags":[
+                    "Greets"
+                ],
+                "summary": "Create a new Greeting messages in system",
+                "parameters":[
+                    {
+                        "in":"body",
+                        "name": "body",
+                        "description": "Greeting message creating",
+                        "schema": {
+                            "$ref": "#/definitions/greets"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed. Bad post data"
+                    }
+                }
+            }
+        },
+        "/greets/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the person that we want to see",
+                    "type":"string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Greets"
+                ],
+                "summary": "Get greet with the given ID",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/greets"
+                        }
+                    },
+                    "404": {
+                        "description": "Failed. Can't found the data by the given ID"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update greet with given ID",
+                "tags": [
+                    "Greets"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "description": "Greet with new values",
+                        "schema": {
+                            "$ref": "#/definitions/greets"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/greets"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed. Bad Post Data"
+                    },
+                    "404": {
+                        "description": "Failed. Greet not found"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete greet with fiven ID",
+                "tags": [
+                    "Greets"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "404": {
+                        "description": "Failed. Greet not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "id": {
+            "properties": {
+                "uuid": {
+                    "type":"string"
+                }
+            }
+        },
+        "greets": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type":"string"
+                },
+                "GreetingMessage": {
+                    "type":"string"
+                }
+            }
+        },
+        "Greets": {
+            "type":"object",
+            "properties": {
+                "greet": {
+                    "type":"object",
+                    "additionalProperties": {
+                        "$ref": "#/deifinitions/greets"
+                    }
+                }
+            }
+        }
+    }
+}
