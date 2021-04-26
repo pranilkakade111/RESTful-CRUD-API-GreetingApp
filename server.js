@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express');
 const logger = require('./logger');
-
+const swaggerDocs = require('./app/swagger.json');
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 
 const data=require('./config/database')(app);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // define a simple route
 app.get('/',(req,res)=>{
