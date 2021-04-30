@@ -1,43 +1,57 @@
-const { data } = require('../../Logger/logger');
-const Greet = require('../services/services');
-const {schema} = require('../Utility/helper');
+const greetingModel = require('../models/greet');
 
 class GreetingAp
 {
-   create = (Data, _callback) => {
+   create = (greetingData, callback) => {
+      greetingModel.create(greetingData, (error ,greetingResult)=>{
+          if(error){
+            callback(error ,null)
+          }else {
+            callback(null ,greetingResult);
+          }
 
-    //  const data = {
-    //   Name:req.body.Name,
-    //   GreetingMessage:req.body.GreetingMessage
-    // }
-     
-    if(!req.body.Name || !req.body.GreetingMessage){
-      return res.send('Name And Greeting Message Should Not be Empty');
-    }
-    const result = schema.validate(req.body)
-
-  //const isEmpty=false;
-  
-    if (result.error) {
-    return res.send("Name should contain at least 3 chars and starts with caps");
-  }
-      Greet.create(Data, _callback,);
+      });
   };
 
-  findAll = (Data,_callback) => {
-  Greet.findAll(Data,_callback);
+  findAll = (callback) => {
+      greetingModel.findAll((error ,greetingResult)=>{
+          if(error){
+            callback(error ,null);
+          }else {
+            callback(null ,greetingResult);
+          }
+     });
+
    };
 
-  findOne = (Data,_callback) => {
-  Greet.findOne(Data ,_callback);
+  findOne = (greetingID,callback) => {
+    greetingModel.findOne(greetingID ,(error ,greetingResult)=>{
+        if(error){
+          callback(error ,null);
+        }else {
+          callback(null ,greetingResult);
+        }
+    });
   };
 
-  updateOne = (Data,_callback) => {
-  Greet.updateOne(Data ,_callback);
+  updateOne = (greetingID ,greetdata ,callback) => {
+    greetingModel.updateOne(greetingID ,greetdata ,(error ,greetingResult)=>{
+        if(error){
+          callback(error ,null);
+        }else {
+          callback(null ,greetingResult);
+        }
+    });
   };
 
-  delete = (Data ,_callback) => {
-  Greet.delete(Data ,_callback);
+  delete = (greetingID ,callback) => {
+    greetingModel.delete(greetingID ,(error ,greetingResult)=>{
+        if(error){
+          callback(error ,null);
+        }else {
+          callback(null ,greetingResult);
+        }
+    });
   };
 }
 
