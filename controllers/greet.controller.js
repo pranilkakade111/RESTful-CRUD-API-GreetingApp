@@ -1,83 +1,65 @@
 const {schema} = require('../Utility/helper');
-const Greet = require('../models/greet');
-module.exports = Greet
-
-
+const greetingService = require('../services/services');
+const { error } = require('winston');
 class GreetingApi {
     
      /**
      * @description  Create and Save a new Greeting Message
      */ 
-       create = (req, res) => {
-       const Data =  {
-           Name:req.body.Name,
-           GreetingMessage:req.body.GreetingMessage
-         }
+       create = (req,res) => {
           
-     /**
-     * @description Validate request
-     */ 
-       if(!req.body.GreetingMessage) {
+       if(!req.body.Name || !req.body.GreetingMessage) {
            return res.status(400).send({
-               message: "Greeting Message can not be empty"
+               success: false,
+               message: "Name And Greeting Message can not be empty"
            });
-       }
-   
-       
-     /**
-     * @description Create a Greeting Message
-     */ 
-       
-       const greet = new Greet({
-           Name: req.body.Name || "Untitled Greeting Message", 
-           GreetingMessage: req.body.GreetingMessage
-       });
-   
-       const result = schema.validate()
-     /**
-     * @description message: 'Name sholud contain 3 characters and Starts with Caps'
-     */ 
+       }   
+       const result = schema.validate(req.body);
        if(result.error){
            return res.send("Name should contain at least 3 chars and starts with caps")
        }
-       
-     /**
-     * @description Save Greeting Message in the database
-     */ 
+
+       const greetingDetails =  {
+        Name:req.body.Name,
+        GreetingMessage:req.body.GreetingMessage
+      };
       
-       greet.save()
-       .then(data => {
-           res.status(200).send({
-             success: true,
-             message: "Greeting Created Successfully...!!! ",
-             result: data
-           });
-       }).catch(err => {
-           res.status(500).send({
-               success: false,
-               message: err.message || "Some error occurred while creating the Greeting Message."
-           });
-       });
+      greetingService.create(greetingDetails, (error ,greettingResult) =>{
+          if(error)
+          {
+              res.status(400).send({
+                  success: false,
+                  message: error.message
+              });
+          }else {
+             res.status(200).send({
+                 success: true,
+                 message: "Data Inserted Successfully",
+                 data: greettingResult
+             })
+          }
+      })
+
      };
    
      /**
      * @description Retrieve and return all Greeting Message from the database.
      */ 
-   
-       findAll = (_req, res) => {
-       Greet.find()
-       .then(greets => {
-           res.status(200).send({
-             success: true,
-             message: "Retrive Greeting Message Successfully.....!!!",
-             result: greets
-           });
-       }).catch(err => {
-           res.status(500).send({
-               success: false,
-               message: err.message || "Some error occurred while retrieving Greeting Message."
-           });
-       });
+       findAll = (req,res) => {
+      greetingService.findAll((error, greettingResult)=>{
+          if(error) {
+              res.status(500).send({
+                  success: false,
+                  message: error.message || "Some Error are occured while retriving Greeting Message.!"
+              });
+          }else {
+              res.status(200).send({
+                  success: true,
+                  message: "Greeting Message Has Been Retrived Successfully..!!",
+                  data: greettingResult
+              })
+          }
+      })
    };
    
    
@@ -85,31 +67,24 @@ class GreetingApi {
     * @description Find a single Greeting Message with a greetId
     */ 
    
-       findOne = (req, res) => {
-       Greet.findById(req.params.greetId)
-       .then(greet => {
-           if(!greet) {
-               return res.status(404).send({
-                   success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
-               });            
-           }
-           res.status(200).send({
-             success: true,
-             message: "Greeting Message is Found By ID Succesfully....!!!!" + " "+ req.params.greetId,
-             result: greet});
-       }).catch(err => {
-           if(err.kind === 'ObjectId') {
-               return res.status(404).send({
-                   success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
-               });                
-           }
-           return res.status(500).send({
-               success: false,
-               message: "Error retrieving Greeting Message with id " + req.params.greetId
-           });
-       });
+       findOne = (req,res) => {
+      greetingService.findOne(req.params.greetId, (error, greettingResult)=>{
+        if(greettingResult === null)
+        {
+            res.status(404).send({
+                success: false,
+                message: "Greeting Message Not Found By ID" + req.params.greetId
+            });
+        }else {
+            res.status(200).send({
+                success: true,
+                message: "Greeting Message Retrived",
+                data: greettingResult
+            });
+        }
+
+      })
+        
    };
    
    
@@ -117,50 +92,33 @@ class GreetingApi {
     * @description  Update a Greeting Message identified by the greetId in the request
     */ 
 
-      updateOne = (req, res) => {
-   
-   /**
-    * @description Validate Request
-    */ 
-       
+      updateOne = (req,res) => {
+        const greetdata ={
+            Name:req.body.Name,
+            GreetingMessage: req.body.GreetingMessage,
+        };
+
        if(!req.body.GreetingMessage) {
            return res.status(400).send({
                success: false,
                message: "Greeting Message content can not be empty"
            });
        }
-   
-       
-   /**
-    * @description Find Greeting Message and update it with the request body
-    */ 
-       
-       Greet.findByIdAndUpdate(req.params.greetId, {
-           Name: req.body.Name || "Untitled Greeting Message",
-           GreetingMessage: req.body.GreetingMessage
-       }, {new: true})
-       .then(greet => {
-           if(!greet) {
-               return res.status(404).send({
+    
+       greetingService.updateOne(req.params.greetId ,greetdata ,(error ,greettingResult)=>{
+           if(greettingResult === null)
+           {
+               res.status(404).send({
                    success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
+                   message: "Greeting Message Not Found With an ID" + req.params.greetId
+               });
+           }else {
+               res.status(200).send({
+                   success: true,
+                   message: "Greeting Message Found And Updated",
+                   data: greettingResult
                });
            }
-           res.status(200).send({
-             success: true,
-             message: "Greeting Message Updated Successfully....!!!!",
-             result: greet});
-       }).catch(err => {
-           if(err.kind === 'ObjectId') {
-               return res.status(404).send({
-                   success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
-               });                
-           }
-           return res.status(500).send({
-               success: false,
-               message: "Error updating Greeting Message with id " + req.params.greetId
-           });
        });
    };
    
@@ -169,31 +127,20 @@ class GreetingApi {
      * @description Delete a Greeting Message with the specified noteId in the request
      */ 
    
-       delete = (req, res) => {
-       Greet.findByIdAndRemove(req.params.greetId)
-       .then(greet => {
-           if(!greet) {
-               return res.status(404).send({
-                   success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
-               });
-           }
-           res.send({
-            success: true, 
-            message: "Greeting Message deleted successfully!"
-          });
-       }).catch(err => {
-           if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-               return res.status(404).send({
-                   success: false,
-                   message: "Greeting Message not found with id " + req.params.greetId
-               });                
-           }
-           return res.status(500).send({
-               success: false,
-               message: "Could not delete Greeting Message with id " + req.params.greetId
-           });
-       });
-   };
+       delete = (req,res) => {
+           greetingService.delete(req.params.greetId , (error, greettingResult)=>{
+               if(greettingResult === null) {
+                    res.status(404).send({
+                        success: false,
+                        message: "Greeting Message Not Found With Id" + req.params.greetId
+                    });
+               }else {
+                   res.status(200).send({
+                       success: true,
+                       message: "Greeting Message Deleted Successfull..!!"
+                   });
+               }
+           })
+        };
    }
    module.exports = new GreetingApi();
